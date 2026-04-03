@@ -104,6 +104,18 @@ That's it. No additional configuration needed.
 | Create invitations | Yes | Yes | - |
 | Cancel invitations | Yes | Yes | - |
 
+The built-in roles and permissions can be replaced entirely. Publish the config and point `enums.role` and `enums.permission` to your own string-backed enum classes that implement `TeamRoleContract` and `TeamPermissionContract`:
+
+```php
+// config/filateams.php
+'enums' => [
+    'role'       => App\Enums\MyTeamRole::class,
+    'permission' => App\Enums\MyTeamPermission::class,
+],
+```
+
+See [`src/Contracts/TeamRoleContract.php`](src/Contracts/TeamRoleContract.php) for the full interface your custom role enum must satisfy.
+
 ---
 
 ## Invitation flow
@@ -150,9 +162,15 @@ This creates `config/filateams.php`:
 
 ```php
 return [
+    // Override the role and permission enum classes
+    'enums' => [
+        'role'       => LaravelDaily\FilaTeams\Enums\TeamRole::class,
+        'permission' => LaravelDaily\FilaTeams\Enums\TeamPermission::class,
+    ],
+
     // Override model classes if you need to extend them
     'models' => [
-        'team' => LaravelDaily\FilaTeams\Models\Team::class,
+        'team'       => LaravelDaily\FilaTeams\Models\Team::class,
         'membership' => LaravelDaily\FilaTeams\Models\Membership::class,
         'invitation' => LaravelDaily\FilaTeams\Models\TeamInvitation::class,
     ],

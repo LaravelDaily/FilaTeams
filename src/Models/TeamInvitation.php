@@ -72,7 +72,7 @@ class TeamInvitation extends Model
     protected function casts(): array
     {
         return [
-            'role'        => TeamRole::class,
+            'role'        => config('filateams.enums.role', TeamRole::class),
             'expires_at'  => 'datetime',
             'accepted_at' => 'datetime',
         ];
