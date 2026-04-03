@@ -33,7 +33,7 @@ class Membership extends Pivot
     protected function casts(): array
     {
         return [
-            'role' => TeamRole::class,
+            'role' => config('filateams.enums.role', TeamRole::class),
         ];
     }
 }

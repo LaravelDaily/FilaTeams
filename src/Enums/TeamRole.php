@@ -4,14 +4,25 @@ declare(strict_types=1);
 
 namespace LaravelDaily\FilaTeams\Enums;
 
-use Filament\Support\Contracts\HasLabel;
+use BackedEnum;
 use Illuminate\Contracts\Support\Htmlable;
+use LaravelDaily\FilaTeams\Contracts\TeamRoleContract;
 
-enum TeamRole: string implements HasLabel
+enum TeamRole: string implements TeamRoleContract
 {
     case Owner  = 'owner';
     case Admin  = 'admin';
     case Member = 'member';
+
+    public static function owner(): static
+    {
+        return self::Owner;
+    }
+
+    public static function default(): static
+    {
+        return self::Member;
+    }
 
     /**
      * @return array<int, array{value: string, label: string}>
@@ -30,20 +41,26 @@ enum TeamRole: string implements HasLabel
         return __('filateams::filateams.roles.' . $this->value);
     }
 
+    public function getColor(): string
+    {
+        return match ($this) {
+            self::Owner  => 'danger',
+            self::Admin  => 'warning',
+            self::Member => 'info',
+        };
+    }
+
     /**
-     * @return array<int, string>
+     * @return array<int, string|TeamPermission>
      */
     public function permissions(): array
     {
         return match ($this) {
-            self::Owner => [
-                'team:update', 'team:delete',
-                'member:add', 'member:update', 'member:remove',
-                'invitation:create', 'invitation:cancel',
-            ],
+            self::Owner => config('filateams.enums.permission', TeamPermission::class)::cases(),
             self::Admin => [
-                'team:update',
-                'invitation:create', 'invitation:cancel',
+                TeamPermission::UpdateTeam,
+                TeamPermission::CreateInvitation,
+                TeamPermission::CancelInvitation,
             ],
             self::Member => [],
         };
@@ -51,7 +68,10 @@ enum TeamRole: string implements HasLabel
 
     public function hasPermission(string $permission): bool
     {
-        return in_array($permission, $this->permissions());
+        return in_array($permission, array_map(
+            static fn ($p) => $p instanceof BackedEnum ? $p->value : $p,
+            $this->permissions()
+        ), strict: true);
     }
 
     public function level(): int
@@ -63,7 +83,7 @@ enum TeamRole: string implements HasLabel
         };
     }
 
-    public function isAtLeast(TeamRole $role): bool
+    public function isAtLeast(TeamRoleContract $role): bool
     {
         return $this->level() >= $role->level();
     }

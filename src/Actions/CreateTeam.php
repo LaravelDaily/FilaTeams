@@ -6,7 +6,7 @@ namespace LaravelDaily\FilaTeams\Actions;
 
 use Illuminate\Support\Facades\DB;
 use LaravelDaily\FilaTeams\Models\Team;
-use LaravelDaily\FilaTeams\Enums\TeamRole;
+use LaravelDaily\FilaTeams\Facades\FilaTeams;
 use LaravelDaily\FilaTeams\Models\Membership;
 use Illuminate\Contracts\Auth\Authenticatable;
 
@@ -26,7 +26,7 @@ class CreateTeam
             Membership::create([
                 'team_id' => $team->id,
                 'user_id' => $user->id,
-                'role'    => TeamRole::Owner->value,
+                'role'    => FilaTeams::ownerRole()->value,
             ]);
 
             $user->switchTeam($team);

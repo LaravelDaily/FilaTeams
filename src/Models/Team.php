@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace LaravelDaily\FilaTeams\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use LaravelDaily\FilaTeams\Enums\TeamRole;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use LaravelDaily\FilaTeams\Facades\FilaTeams;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Filament\Models\Contracts\HasCurrentTenantLabel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -58,7 +58,7 @@ class Team extends Model implements HasCurrentTenantLabel
 
     public function owner(): ?Model
     {
-        return $this->members()->wherePivot('role', TeamRole::Owner->value)->first();
+        return $this->members()->wherePivot('role', FilaTeams::ownerRole()->value)->first();
     }
 
     protected static function newFactory(): TeamFactory

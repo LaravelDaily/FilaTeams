@@ -13,7 +13,7 @@ use Filament\Tables\Columns\TextColumn;
 use LaravelDaily\FilaTeams\Models\Team;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
-use LaravelDaily\FilaTeams\Enums\TeamRole;
+use LaravelDaily\FilaTeams\Facades\FilaTeams;
 use LaravelDaily\FilaTeams\Models\TeamInvitation;
 use LaravelDaily\FilaTeams\Rules\UniqueTeamInvitation;
 use Illuminate\Support\Facades\Notification as NotificationFacade;
@@ -59,8 +59,8 @@ class InvitationsManager extends TableWidget
                             ->rules([new UniqueTeamInvitation($team)]),
                         Select::make('role')
                             ->label(__('filateams::filateams.fields.role.label'))
-                            ->options(collect(TeamRole::assignable())->pluck('label', 'value'))
-                            ->default(TeamRole::Member->value)
+                            ->options(collect(FilaTeams::assignableRoles())->pluck('label', 'value'))
+                            ->default(FilaTeams::defaultRole()->value)
                             ->required(),
                     ])
                     ->action(function (array $data) use ($team, $user): void {

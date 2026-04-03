@@ -4,15 +4,18 @@ declare(strict_types=1);
 
 namespace LaravelDaily\FilaTeams\Concerns;
 
+use BackedEnum;
 use Filament\Panel;
 use Illuminate\Support\Collection;
 use Illuminate\Database\Eloquent\Model;
 use LaravelDaily\FilaTeams\Models\Team;
-use LaravelDaily\FilaTeams\Enums\TeamRole;
+use LaravelDaily\FilaTeams\Facades\FilaTeams;
 use LaravelDaily\FilaTeams\Models\Membership;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use LaravelDaily\FilaTeams\Contracts\TeamRoleContract;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use LaravelDaily\FilaTeams\Contracts\TeamPermissionContract;
 
 trait HasTeams
 {
@@ -26,7 +29,7 @@ trait HasTeams
 
     public function ownedTeams(): HasMany
     {
-        return $this->hasMany(Membership::class)->where('role', TeamRole::Owner->value);
+        return $this->hasMany(Membership::class)->where('role', FilaTeams::ownerRole()->value);
     }
 
     public function teamMemberships(): HasMany
@@ -69,21 +72,22 @@ trait HasTeams
 
     public function ownsTeam(Team $team): bool
     {
-        return $this->teamRole($team) === TeamRole::Owner;
+        return $this->teamRole($team) === FilaTeams::ownerRole();
     }
 
-    public function teamRole(Team $team): ?TeamRole
+    public function teamRole(Team $team): ?TeamRoleContract
     {
         $membership = $this->teamMemberships()->where('team_id', $team->id)->first();
 
         return $membership?->role;
     }
 
-    public function hasTeamPermission(Team $team, string $permission): bool
+    public function hasTeamPermission(Team $team, string | TeamPermissionContract $permission): bool
     {
-        $role = $this->teamRole($team);
+        $role  = $this->teamRole($team);
+        $value = $permission instanceof BackedEnum ? $permission->value : $permission;
 
-        return $role !== null && $role->hasPermission($permission);
+        return $role !== null && $role->hasPermission($value);
     }
 
     public function fallbackTeam(?Team $excluding = null): ?Team

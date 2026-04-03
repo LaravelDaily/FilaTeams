@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use Tests\Models\User;
-use LaravelDaily\FilaTeams\Enums\TeamRole;
+use LaravelDaily\FilaTeams\Facades\FilaTeams;
 use LaravelDaily\FilaTeams\Actions\CreateTeam;
 
 beforeEach(function (): void {
@@ -42,7 +42,7 @@ it('makes the user the owner of the team', function (): void {
     $this->assertDatabaseHas('team_members', [
         'team_id' => $team->id,
         'user_id' => $this->user->id,
-        'role'    => TeamRole::Owner->value,
+        'role'    => FilaTeams::ownerRole()->value,
     ]);
 });
 
