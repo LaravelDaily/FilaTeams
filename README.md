@@ -127,7 +127,7 @@ use LaravelDaily\FilaTeams\Actions\CreateTeam;
 $action = new CreateTeam;
 
 User::whereDoesntHave('teams')->each(function ($user) use ($action) {
-    $action($user, [
+    $action->handle($user, [
         'name' => $user->name . "'s Team",
         'is_personal' => true,
     ]);

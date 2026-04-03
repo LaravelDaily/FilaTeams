@@ -8,13 +8,14 @@ use Illuminate\Support\Facades\DB;
 use LaravelDaily\FilaTeams\Models\Team;
 use LaravelDaily\FilaTeams\Enums\TeamRole;
 use LaravelDaily\FilaTeams\Models\Membership;
+use Illuminate\Contracts\Auth\Authenticatable;
 
 class CreateTeam
 {
     /**
      * @param  array{name: string, is_personal?: bool}  $data
      */
-    public function __invoke($user, array $data): Team
+    public function handle(Authenticatable $user, array $data): Team
     {
         return DB::transaction(function () use ($user, $data) {
             $team = Team::create([
