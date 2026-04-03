@@ -35,8 +35,6 @@ class CreateTeamPage extends RegisterTenant
 
     protected function handleRegistration(array $data): Model
     {
-        $action = new CreateTeam;
-
-        return $action(auth()->user(), $data);
+        return app(CreateTeam::class)->handle(auth()->user(), $data);
     }
 }
