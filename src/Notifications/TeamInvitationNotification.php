@@ -41,6 +41,6 @@ class TeamInvitationNotification extends Notification implements ShouldQueue
             ->subject(__('filateams::filateams.mail.invitation.subject', ['team' => $this->invitation->team->name]))
             ->line(__('filateams::filateams.mail.invitation.line_invited', ['inviter' => $this->invitation->inviter->name, 'team' => $this->invitation->team->name]))
             ->action(__('filateams::filateams.mail.invitation.action_accept'), $acceptUrl)
-            ->line(__('filateams::filateams.mail.invitation.line_expiry', ['date' => $this->invitation->expires_at->format('F j, Y')]));
+            ->line(__('filateams::filateams.mail.invitation.line_expiry', ['date' => $this->invitation->expires_at->isoFormat('LL')]));
     }
 }
